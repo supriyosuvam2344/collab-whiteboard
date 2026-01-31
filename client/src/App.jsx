@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Stage, Layer, Line, Text, Rect, Group } from "react-konva";
 import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:3001");
+const socket = io.connect("https://collab-whiteboard-1xea.onrender.com");
 
 function App() {
   // --- THEME STATE ---
