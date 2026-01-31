@@ -41,18 +41,25 @@ io.on("connection", (socket) => {
     roomHistory[room].push(data);
   });
 
-  // 3. Clear Board
-  socket.on("clear", (room) => {
-    roomHistory[room] = []; 
-    io.to(room).emit("clear"); 
-  });
-
-  // 4. Undo
+  // 3. Undo
   socket.on("undo", (room) => {
+    console.log(`📢 UNDO requested for Room: [${room}]`);
+
     if (roomHistory[room] && roomHistory[room].length > 0) {
       roomHistory[room].pop();
-      io.to(room).emit("load_history", roomHistory[room]);
+      io.to(room).emit("canvasImage", roomHistory[room]);
+      console.log("✅ Undo successful");
+    } else {
+      console.log("⚠️ Undo failed: No history found for this room.");
     }
+  });
+
+  // 4. Clear
+  socket.on("clear", (room) => {
+    console.log(`📢 CLEAR requested for Room: [${room}]`);
+    roomHistory[room] = [];
+    io.to(room).emit("canvasImage", []);
+    console.log("✅ Room cleared");
   });
 
   // 5. Edit Text
