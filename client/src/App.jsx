@@ -180,8 +180,25 @@ function App() {
     socket.emit("move_element", { room, id, x: newX, y: newY });
   };
 
-  const clearBoard = () => socket.emit("clear", room);
-  const undo = () => socket.emit("undo", room);
+  const undo = () => {
+    // Alert the user exactly what the code sees
+    alert(`DEBUG: Room ID is [${room}]`); 
+
+    if (room) {
+      socket.emit("undo", room);
+      console.log("Sent undo to:", room);
+    }
+  };
+
+  const clearBoard = () => {
+    // Alert the user exactly what the code sees
+    alert(`DEBUG: Room ID is [${room}]`);
+
+    if (room) {
+      socket.emit("clear", room); // Remember: Server listens for "clear", not "clearBoard"
+      console.log("Sent clear to:", room);
+    }
+  };
 
   const getCursorStyle = () => {
     if (tool === "text") return "text";
@@ -275,6 +292,7 @@ function App() {
         </div>
 
         <button onClick={undo} style={{ marginLeft: "15px", color: "orange", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>↩️</button>
+        {/* ✅ The onClick must match the function name exactly */}
         <button onClick={clearBoard} style={{ marginLeft: "15px", color: "red", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>🗑️</button>
         <button onClick={handleExport} title="Save Image" style={{ marginLeft: "15px", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>📷</button>
         
