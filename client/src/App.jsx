@@ -181,22 +181,14 @@ function App() {
   };
 
   const undo = () => {
-    // Alert the user exactly what the code sees
-    alert(`DEBUG: Room ID is [${room}]`); 
-
     if (room) {
       socket.emit("undo", room);
-      console.log("Sent undo to:", room);
     }
   };
 
   const clearBoard = () => {
-    // Alert the user exactly what the code sees
-    alert(`DEBUG: Room ID is [${room}]`);
-
     if (room) {
-      socket.emit("clear", room); // Remember: Server listens for "clear", not "clearBoard"
-      console.log("Sent clear to:", room);
+      socket.emit("clear", room);
     }
   };
 
