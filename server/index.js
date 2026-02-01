@@ -45,16 +45,14 @@ io.on("connection", (socket) => {
   socket.on("undo", (room) => {
     if (roomHistory[room] && roomHistory[room].length > 0) {
       roomHistory[room].pop();
-      io.to(room).emit("canvasImage", roomHistory[room]);
+      io.to(room).emit("load_history", roomHistory[room]); 
     }
   });
-
-  // lol chal ja bsdk
 
   // 4. Clear
   socket.on("clear", (room) => {
     roomHistory[room] = [];
-    io.to(room).emit("canvasImage", []);
+    io.to(room).emit("load_history", []); 
   });
 
   // 5. Edit Text
