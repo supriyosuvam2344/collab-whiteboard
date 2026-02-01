@@ -49,6 +49,8 @@ io.on("connection", (socket) => {
     }
   });
 
+  // lol chal ja bsdk
+
   // 4. Clear
   socket.on("clear", (room) => {
     roomHistory[room] = [];
