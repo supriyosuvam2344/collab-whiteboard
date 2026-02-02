@@ -13,6 +13,16 @@ function App() {
   const [room, setRoom] = useState("");
   const [inputRoom, setInputRoom] = useState("");
 
+  useEffect(() => {
+    // Get the room name from the URL
+    const pathRoom = decodeURIComponent(window.location.pathname.substring(1)); // decodeURIComponent handles spaces or special characters correctly
+    
+    if (pathRoom) {
+      setRoom(pathRoom);
+      setJoined(true);
+    }
+  }, []);
+
   // --- WHITEBOARD STATE ---
   const [lines, setLines] = useState([]);
   const isDrawing = useRef(false);
@@ -87,6 +97,9 @@ function App() {
     if (inputRoom.trim()) {
       setRoom(inputRoom);
       setJoined(true);
+      
+      // to update the URL without reloading
+      window.history.pushState(null, "", "/" + inputRoom);
     }
   };
 
@@ -287,8 +300,15 @@ function App() {
         {/* ✅ The onClick must match the function name exactly */}
         <button onClick={clearBoard} style={{ marginLeft: "15px", color: "red", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>🗑️</button>
         <button onClick={handleExport} title="Save Image" style={{ marginLeft: "15px", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>📷</button>
-        
-        <button onClick={() => window.location.reload()} style={{ position: "absolute", right: "20px", background: "transparent", color: "#666", border: "1px solid #444", padding: "5px 10px", cursor: "pointer", fontSize: "12px" }}>Leave Room</button>
+        <button 
+          onClick={() => {
+            window.history.pushState(null, "", "/"); // Reset URL to just "/"
+            window.location.reload(); // Reload to clear memory
+          }} 
+          style={{ position: "absolute", right: "20px", background: "transparent", color: "#666", border: "1px solid #444", padding: "5px 10px", cursor: "pointer", fontSize: "12px" }}
+        >
+          Leave Room
+        </button>
       </div>
 
       {/* CANVAS */}
