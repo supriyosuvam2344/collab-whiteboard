@@ -28,6 +28,7 @@ function App() {
   const isDrawing = useRef(false);
   const stageRef = useRef(null); 
   const [tool, setTool] = useState('pen'); 
+  const [isLeaveHovered, setIsLeaveHovered] = useState(false);
   const [lineColor, setLineColor] = useState('#ffffff');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [eraserWidth, setEraserWidth] = useState(20); 
@@ -301,11 +302,23 @@ function App() {
         <button onClick={clearBoard} style={{ marginLeft: "15px", color: "red", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>🗑️</button>
         <button onClick={handleExport} title="Save Image" style={{ marginLeft: "15px", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>📷</button>
         <button 
+          onMouseEnter={() => setIsLeaveHovered(true)}  // Mouse enters -> Red
+          onMouseLeave={() => setIsLeaveHovered(false)} // Mouse leaves -> Grey
           onClick={() => {
             window.history.pushState(null, "", "/"); // Reset URL to just "/"
             window.location.reload(); // Reload to clear memory
           }} 
-          style={{ position: "absolute", right: "20px", background: "transparent", color: "#666", border: "1px solid #444", padding: "5px 10px", cursor: "pointer", fontSize: "12px" }}
+          style={{ 
+            position: "absolute", 
+            right: "20px", 
+            background: "transparent", 
+            color: isLeaveHovered ? "red" : "#666", 
+            border: isLeaveHovered ? "1px solid red" : "1px solid #444", 
+            padding: "5px 10px", 
+            cursor: "pointer", 
+            fontSize: "12px",
+            transition: "all 0.2s ease" // smooth colour change
+          }}
         >
           Leave Room
         </button>
