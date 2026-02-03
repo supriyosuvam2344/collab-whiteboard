@@ -123,7 +123,7 @@ function App() {
   const handleWheel = (e) => {
     e.evt.preventDefault(); // Stop the browser from scrolling the whole page
 
-    // 1. ZOOM (Ctrl + Scroll)
+    // 1. ZOOM (Ctrl + Scroll) 
     if (e.evt.ctrlKey) {
       const scaleBy = 1.1;
       const stage = e.target.getStage();
