@@ -335,9 +335,6 @@ function App() {
           )}
         </div>
 
-        <button onClick={() => setTool('text')} style={{ marginLeft: "15px", background: tool === "text" ? "#ddd" : "#efefef", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>Aa</button>
-        <button onClick={() => setTool('sticky')} style={{ marginLeft: "15px", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>🟨</button>
-
         <div style={{ display: "inline-block", position: "relative", marginLeft: "15px" }}>
           <button onClick={() => { setTool("eraser"); setShowEraserPicker(false); setShowColorPicker(false); }}
             style={{ padding: "10px", background: tool === "eraser" ? currentTheme.bg : undefined, border: "1px solid #1f1d1dff", borderRight: "none", cursor: "pointer" }}>🧽</button>
@@ -350,8 +347,10 @@ function App() {
           )}
         </div>
 
+        <button onClick={() => setTool('text')} style={{ marginLeft: "15px", background: tool === "text" ? "#ddd" : "#efefef", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>Aa</button>
+        <button onClick={() => setTool('sticky')} style={{ marginLeft: "15px", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>🟨</button>
+
         <button onClick={undo} style={{ marginLeft: "15px", color: "orange", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>↩️</button>
-        {/* ✅ The onClick must match the function name exactly */}
         <button onClick={clearBoard} style={{ marginLeft: "15px", color: "red", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>🗑️</button>
         <button onClick={handleExport} title="Save Image" style={{ marginLeft: "15px", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>📷</button>
         <button 
