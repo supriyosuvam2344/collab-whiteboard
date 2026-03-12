@@ -267,7 +267,7 @@ function App() {
     { name: "Orange", val: "#ff8800" },
     { name: "Pink", val: "#ff3eac" }
   ];
-  const [stickyColor, setStickyColor] = useState("#fef08a"); 
+  const [stickyColor, setStickyColor] = useState("#ffe100");
   const [showStickyPicker, setShowStickyPicker] = useState(false);
 
   const undo = () => {
@@ -467,7 +467,7 @@ function App() {
         <Layer>
           {lines.map((line, i) => {
             if (line.tool === "text") return <Text key={i} x={line.x} y={line.y} text={line.text} fill={line.fill} fontSize={20} draggable onDblClick={(e) => handleDblClick(e, line.id, line.text)} onDragEnd={(e) => handleDragEnd(e, line.id)} />;
-            if (line.tool === "sticky") return (<Group key={i} x={line.x} y={line.y} draggable onDblClick={(e) => handleDblClick(e, line.id, line.text)} onDragEnd={(e) => handleDragEnd(e, line.id)}><Rect width={150} height={150} fill={line.color || "#fef08a"} shadowBlur={5} cornerRadius={5} /><Text text={line.text} width={150} height={150} padding={10} fontSize={18} fill="black" fontFamily="Arial" /></Group>);
+            if (line.tool === "sticky") return (<Group key={i} x={line.x} y={line.y} draggable onDblClick={(e) => handleDblClick(e, line.id, line.text)} onDragEnd={(e) => handleDragEnd(e, line.id)}><Rect width={150} height={150} fill={line.color || "#ffe100"} shadowBlur={5} cornerRadius={5} /><Text text={line.text} width={150} height={150} padding={10} fontSize={18} fill="black" fontFamily="Arial" /></Group>);
             return <Line key={i} points={line.points} stroke={line.tool === "eraser" ? currentTheme.bg : line.stroke} strokeWidth={line.strokeWidth} tension={0.5} lineCap="round" lineJoin="round" globalCompositeOperation={line.tool === 'eraser' ? 'destination-out' : 'source-over'} />;
           })}
         </Layer>
@@ -498,7 +498,7 @@ function App() {
         </button>
       )}
 
-      {/* ✨ THEME TOGGLE (Main Screen) - UPDATED STYLE */}
+      {/* ✨ THEME TOGGLE (Main Screen) - UPDATED STYLE */} 
       <button onClick={toggleTheme} style={{
         position: "fixed", bottom: "20px", right: "20px", width: "40px", height: "40px", borderRadius: "10px",
         background: currentTheme.bg, color: currentTheme.text, border: `1px solid ${currentTheme.toggleBorder}`,
