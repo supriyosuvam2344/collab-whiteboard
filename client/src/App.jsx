@@ -498,7 +498,7 @@ function App() {
         </button>
       )}
 
-      {/* ✨ THEME TOGGLE (Main Screen) - UPDATED STYLE */} 
+      {/* ✨ THEME TOGGLE (Main Screen) - UPDATED STYLE */}
       <button onClick={toggleTheme} style={{
         position: "fixed", bottom: "20px", right: "20px", width: "40px", height: "40px", borderRadius: "10px",
         background: currentTheme.bg, color: currentTheme.text, border: `1px solid ${currentTheme.toggleBorder}`,
