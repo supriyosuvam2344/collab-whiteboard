@@ -47,7 +47,7 @@ function App() {
     { name: "Orange", val: "#e67e22" },
   ];
   const eraserSizes = [5, 10, 20, 30, 40, 50];
-
+  
   // --- THEME COLORS ---
   const themes = {
     dark: {
@@ -192,9 +192,21 @@ function App() {
 
     // STICKY TOOL
     if (tool === "sticky") {
-       // ... (Same as before, just ensure you use pos.x and pos.y)
-       // I'll skip typing the whole block, just replace e.target... with 'pos'
-       return;
+      const textInput = window.prompt("Sticky Note Text:");
+      if (textInput) {
+        const newSticky = { 
+          id: Date.now().toString(), 
+          tool: "sticky", 
+          text: textInput, 
+          x: pos.x,
+          y: pos.y,
+          color: stickyColor
+        };
+        setLines((prev) => [...prev, newSticky]);
+        socket.emit("draw_line", { room, data: newSticky });
+        socket.emit("end_stroke", { room, data: newSticky });
+      }
+      return;
     }
 
     // DRAWING
@@ -218,7 +230,7 @@ function App() {
     let lastLine = lines[lines.length - 1];
     if (!lastLine || !lastLine.points) return;
     
-    lastLine.points = lastLine.points.concat([pos.x, pos.y]); // ✅ Use corrected pos
+    lastLine.points = lastLine.points.concat([pos.x, pos.y]);
     lines.splice(lines.length - 1, 1, lastLine);
     setLines(lines.concat());
     socket.emit("draw_line", { room, data: lastLine });
@@ -247,6 +259,17 @@ function App() {
     socket.emit("move_element", { room, id, x: newX, y: newY });
   };
 
+  // --- STICKY NOTE STATE ---
+  const stickyColors = [
+    { name: "Yellow", val: "#ffe100" },
+    { name: "Green", val: "#00ff59" },
+    { name: "Blue", val: "#4a9afc" },
+    { name: "Orange", val: "#ff8800" },
+    { name: "Pink", val: "#ff3eac" }
+  ];
+  const [stickyColor, setStickyColor] = useState("#fef08a"); 
+  const [showStickyPicker, setShowStickyPicker] = useState(false);
+
   const undo = () => {
     if (room) {
       socket.emit("undo", room);
@@ -257,6 +280,11 @@ function App() {
     if (room) {
       socket.emit("clear", room);
     }
+  };
+
+  const resetView = () => {
+    setStagePos({ x: 0, y: 0 });
+    setStageScale(1);
   };
 
   const getCursorStyle = () => {
@@ -310,7 +338,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div style={{ overflow: "hidden", height: "100vh", width: "100vw" }}>
       {/* TOOLBAR */}
       <div style={{ 
         padding: "10px", textAlign: "center", background: currentTheme.ui, 
@@ -348,7 +376,43 @@ function App() {
         </div>
 
         <button onClick={() => setTool('text')} style={{ marginLeft: "15px", background: tool === "text" ? "#ddd" : "#efefef", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>Aa</button>
-        <button onClick={() => setTool('sticky')} style={{ marginLeft: "15px", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>🟨</button>
+
+        {/* 3. STICKY NOTES */}
+        <div style={{ display: "inline-block", position: "relative", marginLeft: "15px" }}>
+          <button 
+            onClick={() => { setTool('sticky'); setShowStickyPicker(false); setShowColorPicker(false); setShowEraserPicker(false); }}
+            style={{ 
+              padding: "10px", 
+              background: tool === "sticky" ? stickyColor : "#efefef", 
+              border: "1px solid #999", 
+              borderRight: "none", 
+              cursor: "pointer",
+              // 👇 Changed "flex" to "inline-flex" here!
+              display: "inline-flex", alignItems: "center" 
+            }}
+          >
+            🟨
+          </button>
+          
+          <button onClick={() => { setShowStickyPicker(!showStickyPicker); setShowColorPicker(false); setShowEraserPicker(false); }}
+            style={{ padding: "10px", background: "#656161ff", border: "1px solid #999", cursor: "pointer", color: "white" }}>▼</button>
+          
+          {showStickyPicker && (
+            <div style={{ position: "absolute", top: "100%", left: 0, background: "#333", border: "1px solid #555", zIndex: 100, display: "flex", flexDirection: "row", padding: "5px", gap: "5px", borderRadius: "5px" }}>
+              {stickyColors.map((c) => (
+                <button 
+                  key={c.val} 
+                  title={c.name} 
+                  onClick={() => { setStickyColor(c.val); setTool("sticky"); setShowStickyPicker(false); }} 
+                  style={{ 
+                    width: "30px", height: "30px", background: c.val, borderRadius: "5px", cursor: "pointer", 
+                    border: stickyColor === c.val ? "2px solid white" : "1px solid #777" 
+                  }} 
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
         <button onClick={undo} style={{ marginLeft: "15px", color: "orange", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>↩️</button>
         <button onClick={clearBoard} style={{ marginLeft: "15px", color: "red", padding: "10px", border: "1px solid #999", cursor: "pointer" }}>🗑️</button>
@@ -403,11 +467,36 @@ function App() {
         <Layer>
           {lines.map((line, i) => {
             if (line.tool === "text") return <Text key={i} x={line.x} y={line.y} text={line.text} fill={line.fill} fontSize={20} draggable onDblClick={(e) => handleDblClick(e, line.id, line.text)} onDragEnd={(e) => handleDragEnd(e, line.id)} />;
-            if (line.tool === "sticky") return (<Group key={i} x={line.x} y={line.y} draggable onDblClick={(e) => handleDblClick(e, line.id, line.text)} onDragEnd={(e) => handleDragEnd(e, line.id)}><Rect width={150} height={150} fill="#ffeb3b" shadowBlur={10} cornerRadius={5} /><Text text={line.text} width={150} height={150} padding={10} fontSize={18} fill="black" fontFamily="Arial" /></Group>);
+            if (line.tool === "sticky") return (<Group key={i} x={line.x} y={line.y} draggable onDblClick={(e) => handleDblClick(e, line.id, line.text)} onDragEnd={(e) => handleDragEnd(e, line.id)}><Rect width={150} height={150} fill={line.color || "#fef08a"} shadowBlur={5} cornerRadius={5} /><Text text={line.text} width={150} height={150} padding={10} fontSize={18} fill="black" fontFamily="Arial" /></Group>);
             return <Line key={i} points={line.points} stroke={line.tool === "eraser" ? currentTheme.bg : line.stroke} strokeWidth={line.strokeWidth} tension={0.5} lineCap="round" lineJoin="round" globalCompositeOperation={line.tool === 'eraser' ? 'destination-out' : 'source-over'} />;
           })}
         </Layer>
       </Stage>
+
+      {/* 🚀 "SCROLL BACK" FLOATING BUTTON */}
+      {(stagePos.x !== 0 || stagePos.y !== 0 || stageScale !== 1) && (
+        <button 
+          onClick={resetView}
+          style={{
+            position: "fixed",
+            bottom: "30px",
+            left: "50%",
+            transform: "translateX(-50%)", // perfectly centers it horizontally
+            padding: "10px 24px",
+            background: currentTheme.ui,
+            color: currentTheme.text,
+            border: `1px solid ${currentTheme.border}`,
+            borderRadius: "50px", // 👈 This makes the left and right edges perfectly circular (pill shape)
+            cursor: "pointer",
+            fontSize: "14px",
+            boxShadow: "0 1px 15px rgba(214, 212, 212, 0.68)", // adds a nice floating shadow
+            zIndex: 1000,
+            transition: "all 0.3s ease"
+          }}
+        >
+          scroll back
+        </button>
+      )}
 
       {/* ✨ THEME TOGGLE (Main Screen) - UPDATED STYLE */}
       <button onClick={toggleTheme} style={{
